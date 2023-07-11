@@ -1,0 +1,56 @@
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options
+chrome_options = Options()
+chrome_options.add_experimental_option("detach", True)
+from bs4 import BeautifulSoup
+import time
+import requests
+# Here Chrome  will be used
+driver = webdriver.Chrome(options=chrome_options)
+   
+URL = "https://www.xscores.com/soccer"
+
+def get_data(URL):
+	r = driver.get(URL) 
+	html = driver.page_source
+	soup = BeautifulSoup(html, 'html.parser')
+	 
+	try:
+		l = driver.find_element(By.XPATH, '/html/body/div[8]/div[2]/div[1]/div[2]/div[2]/button[1]/p')
+		l.click()
+	except NoSuchElementException:
+		pass  # Skip the next line of code if the element is not found
+		
+	
+	tv_find=soup.find('div', attrs = {'id':'tv_listing_backlay'}) 
+	date=soup.find('div', attrs = {'class':'match_details_date'})  
+	date = date.text.strip()
+	print(date)
+	title = soup.title.text.strip()
+	print(title)
+	print('-------Tv ChANNELS--------- ')
+	for ultag in soup.find_all('ul', {'id': 'tv_listing'}):
+		for litag in ultag.find_all('li'):
+			print(litag.text)
+	print('---------------- end')	
+def get_url(URL):
+	r = requests.get(URL) 
+	soup = BeautifulSoup(r.content, 'html5lib')
+	for row in soup.findAll('a',attrs = {'class':'match_line'}):
+		tv_find=row.find('div', attrs = {'class':'score_tv score_cell centerTXT'}) 
+		if(tv_find is not None):
+			
+			
+			 
+			get_data('https://www.xscores.com/'+row['href'])
+
+			
+
+			
+get_url(URL)	 
