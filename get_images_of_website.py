@@ -86,3 +86,4 @@ while urls_to_crawl:
     urls_to_crawl.update(new_urls)
 
 print("Crawling completed.")
+
